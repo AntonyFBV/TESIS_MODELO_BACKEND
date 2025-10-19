@@ -1,6 +1,9 @@
 fastapi
 uvicorn[standard]
 pandas
-scikit-learn
-xgboost
+numpy
 joblib
+xgboost
+imbalanced-learn
+scikit-learn
+shap==0.43.0
