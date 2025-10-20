@@ -85,9 +85,9 @@ test_metrics = evaluate_model(xgb_model, X_test, y_test, "Test Set")
 # Evaluación final
 eval_metrics = evaluate_model(xgb_model, X_eval, y_eval, "Evaluation Set")
 
-# === 8️⃣ Guardar modelo ===
-joblib.dump(xgb_model, 'xgboost_model_final.pkl')
-print("\n✅ Modelo XGBoost guardado como 'xgboost_model_final.pkl'")
+# === 8️⃣ Guardar modelo en formato oficial de XGBoost ===
+xgb_model.save_model('xgboost_model_final.json')
+print("\n✅ Modelo XGBoost guardado como 'xgboost_model_final.json'")
 
 # === 9️⃣ Guardar métricas y parámetros ===
 metrics = {

@@ -3,12 +3,15 @@
 import shap
 import pandas as pd
 import joblib
+import xgboost as xgb
 import os
 
 # === 1️⃣ Cargar el modelo una sola vez ===
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "model", "xgboost_model_final.pkl")
-model = joblib.load(model_path)
+model_path = os.path.join(BASE_DIR, "model", "xgboost_model_final.json")
+
+model = xgb.XGBClassifier()
+model.load_model(model_path)
 
 # === 2️⃣ Crear explainer SHAP una sola vez ===
 # (Usamos una fila base con las columnas esperadas)

@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pandas as pd
-import joblib
 import os
+import xgboost as xgb  # ✅ usar xgboost directamente
 
 # 👇 Importar la función del recomendador
 from .recomendador_xgboost import generar_recomendacion
@@ -23,10 +23,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Cargar modelo
+# ✅ Cargar modelo XGBoost en formato JSON
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "model", "xgboost_model_final.pkl")
-model = joblib.load(model_path)
+model_path = os.path.join(BASE_DIR, "model", "xgboost_model_final.json")
+
+model = xgb.XGBClassifier()
+model.load_model(model_path)
+
+# ✅ Fin del cambio
 
 # Definir los campos esperados
 class InputData(BaseModel):
@@ -65,19 +69,14 @@ def predict(data: InputData):
     return {"prediction": int(pred[0])}
 
 
-# 🧠 Nuevo endpoint para recomendaciones
 @app.post("/recomendar")
 def recomendar(data: InputData):
     df = pd.DataFrame([data.dict()])
 
-    # 🔹 Calcular probabilidad de supervivencia
     prob = float(model.predict_proba(df)[0][1])
-
-    # 🔹 Generar recomendaciones con contexto
     recomendaciones = generar_recomendacion(df, idx=0, probabilidad=prob)
 
     return {
         "probabilidad_sobrevivir": round(prob, 4),
         "recomendaciones": recomendaciones
     }
-
