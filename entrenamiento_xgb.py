@@ -16,8 +16,8 @@ from imblearn.over_sampling import SMOTE
 warnings.filterwarnings('ignore')
 
 # Fijar semillas
-np.random.seed(42)
-random.seed(42)
+np.random.seed(41)
+random.seed(41)
 
 # === 1️⃣ Cargar datos ===
 print("🔄 Cargando datos desde PostgreSQL...")
@@ -31,7 +31,7 @@ y = df['sobrevive_2años']
 
 # === 3️⃣ División de datos ===
 X_train, X_temp, y_train, y_temp = train_test_split(
-    X, y, test_size=0.30, random_state=42, stratify=y
+    X, y, test_size=0.20, random_state=42, stratify=y
 )
 X_test, X_eval, y_test, y_eval = train_test_split(
     X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp

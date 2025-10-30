@@ -34,18 +34,12 @@ model.load_model(model_path)
 
 # Definir los campos esperados
 class InputData(BaseModel):
-    activo_corriente: int
     capital_invertido: int
-    departamento: int
     provincia: int
-    gastos_financieros: int
     gastos_por_prestamos: float
     deudas_corto_plazo: int
     patrimonio_empresa: float
-    ganancia_operativa: int
     total_activo: float
-    deudas_largo_plazo: float
-    total_pasivo_y_patrimonio: float
     numero_empleados: int
     ventas_netas: int
     canal_principal: int
@@ -59,6 +53,7 @@ class InputData(BaseModel):
     vende_en_tienda: bool
     otros_medios_venta: bool
     vende_por_telefono: bool
+    publicidad:bool
     uso_de_software: bool
 
 
