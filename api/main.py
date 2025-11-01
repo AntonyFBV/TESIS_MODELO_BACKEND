@@ -1,7 +1,12 @@
 # api/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI,Depends,HTTPException,status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from .db import SessionLocal
+from .models import User
+from .auth import verify_password, get_password_hash, create_access_token
 import pandas as pd
 import os
 import xgboost as xgb  # ✅ usar xgboost directamente
@@ -12,6 +17,10 @@ from .recomendador_xgboost import generar_recomendacion
 
 # Crear la instancia de FastAPI
 app = FastAPI(title="XGBoost Prediction API")
+
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
 
 # Habilitar CORS
 origins = ["http://localhost:4200"]
@@ -56,6 +65,10 @@ class InputData(BaseModel):
     publicidad:bool
     uso_de_software: bool
 
+class RegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
 
 @app.post("/predict")
 def predict(data: InputData):
@@ -75,3 +88,60 @@ def recomendar(data: InputData):
         "probabilidad_sobrevivir": round(prob, 4),
         "recomendaciones": recomendaciones
     }
+
+# Endpoint Registro
+@app.post("/register")
+async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.username == data.username))
+    existing_user = result.scalars().first()
+
+    if existing_user:
+        raise HTTPException(status_code=400, detail="El usuario ya existe")
+
+    hashed_pw = get_password_hash(data.password[:72])  # corta si pasa el límite bcrypt
+    new_user = User(username=data.username, email=data.email, hashed_password=hashed_pw)
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    return {"msg": "Usuario registrado exitosamente", "user": new_user.username}
+
+
+# Endpoint Login
+@app.post("/login")
+async def login(username: str, password: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalars().first()
+
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+
+    token = create_access_token(data={"sub": user.username})
+    return {"access_token": token, "token_type": "bearer","user_id":user.id}
+
+# Endpoint Listar usuario
+@app.get("/user/{user_id}")
+async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalars().first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "password": user.hashed_password
+
+    }
+
+# 👇 Agregar al final del archivo
+from .db import engine, Base
+import asyncio
+
+@app.on_event("startup")
+async def startup_event():
+    async with engine.begin() as conn:
+        print("🔄 Verificando tablas en la base de datos...")
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Tablas listas en la base de datos")
