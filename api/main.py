@@ -130,9 +130,59 @@ async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
     return {
         "id": user.id,
         "username": user.username,
-        "email": user.email,
-        "password": user.hashed_password
+        "email": user.email
 
+    }
+
+from fastapi import Body
+
+class UserUpdateRequest(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    password: str | None = None
+
+@app.put("/user/{user_id}")
+@app.patch("/user/{user_id}")
+@app.put("/user/{user_id}")
+@app.patch("/user/{user_id}")
+async def update_user(
+    user_id: int,
+    data: UserUpdateRequest = Body(...),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalars().first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    # Validaciones de email y username
+    if data.email and data.email != user.email:
+        email_check = await db.execute(select(User).where(User.email == data.email))
+        if email_check.scalars().first():
+            raise HTTPException(status_code=400, detail="El correo ya está registrado")
+
+    if data.username and data.username != user.username:
+        username_check = await db.execute(select(User).where(User.username == data.username))
+        if username_check.scalars().first():
+            raise HTTPException(status_code=400, detail="El nombre de usuario ya está en uso")
+
+    # Actualizaciones
+    if data.username:
+        user.username = data.username
+    if data.email:
+        user.email = data.email
+    if data.password:
+        user.hashed_password = get_password_hash(data.password[:72])
+
+    await db.commit()
+    await db.refresh(user)
+
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "message": "Usuario actualizado correctamente"
     }
 
 # 👇 Agregar al final del archivo
