@@ -81,11 +81,19 @@ def predict(data: InputData):
 def recomendar(data: InputData):
     df = pd.DataFrame([data.dict()])
 
-    prob = float(model.predict_proba(df)[0][1])
-    recomendaciones = generar_recomendacion(df, idx=0, probabilidad=prob)
+    # Probabilidades del modelo
+    proba = model.predict_proba(df)[0]
+    prob_no, prob_si = float(proba[0]), float(proba[1])
 
+    # Llamar a la función del recomendador existente
+    recomendaciones = generar_recomendacion(df, idx=0, probabilidad=prob_si)
+
+    # Respuesta lista para el dashboard
     return {
-        "probabilidad_sobrevivir": round(prob, 4),
+        "probabilidades": {
+            "sobrevive": round(prob_si * 100, 2),
+            "no_sobrevive": round(prob_no * 100, 2)
+        },
         "recomendaciones": recomendaciones
     }
 

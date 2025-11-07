@@ -29,23 +29,23 @@ explainer = shap.Explainer(model, X_base)
 
 # === 4️⃣ Tipos de columnas ===
 numericas = [
-    "capital_invertido", "gastos_por_prestamos", "deudas_corto_plazo", 
+    "capital_invertido", "gastos_por_prestamos", "deudas_corto_plazo",
     "patrimonio_empresa", "total_activo", "numero_empleados", "ventas_netas"
 ]
 
 categoricas = [
-    "canal_principal", "cantidad_canales_venta"
+    "cantidad_canales_venta"
 ]
 
 booleanas = [
-    "vende_por_catalogo", "vende_con_comisionistas", "vende_a_domicilio", 
-    "vende_en_linea", "vende_en_ferias", "vende_en_maquinas_venta", 
-    "vende_en_tienda", "otros_medios_venta", "vende_por_telefono", 
+    "vende_por_catalogo", "vende_con_comisionistas", "vende_a_domicilio",
+    "vende_en_linea", "vende_en_ferias", "vende_en_maquinas_venta",
+    "vende_en_tienda", "otros_medios_venta", "vende_por_telefono",
     "publicidad", "uso_de_software"
 ]
 
-# === 5️⃣ Variables relevantes a mostrar en recomendaciones ===
-variables_relevantes = numericas + booleanas  # puedes ajustar según tu interés
+# === 5️⃣ Variables relevantes (todas excepto provincia y canal_principal) ===
+variables_relevantes = numericas + categoricas + booleanas
 
 # === 6️⃣ Función de recomendación completa ===
 def generar_recomendacion(X: pd.DataFrame, idx: int = 0, probabilidad: float = None):
@@ -76,43 +76,34 @@ def generar_recomendacion(X: pd.DataFrame, idx: int = 0, probabilidad: float = N
         if f in variables_relevantes
     ]
 
-    # Ordenar por impacto absoluto y tomar top 3
+    # Ordenar todas las variables por impacto absoluto
     feature_importances = sorted(
         feature_importances,
         key=lambda x: abs(x[2]),
         reverse=True
-    )[:3]
+    )
 
-    # Generar recomendaciones personalizadas
-    recomendaciones = []
+    # Calcular impacto total para normalización
     total_shap_abs = sum(abs(v) for _, _, v in feature_importances) or 1.0
 
+    # Generar lista de recomendaciones
+    recomendaciones = []
     for feature, value, impact in feature_importances:
         # Valor legible según tipo
         if feature in booleanas:
             valor_mostrar = "Sí" if value == 1 else "No"
         elif feature in numericas:
             valor_mostrar = float(value)
-        else:  # categóricas
+        else:
             valor_mostrar = int(value)
 
-        # Mensaje dinámico según tipo, valor e impacto
-        if feature in numericas:
-            if impact > 0:
-                mensaje = f"Aumentar '{feature}' puede mejorar la probabilidad de supervivencia."
-            else:
-                mensaje = f"Reducir '{feature}' puede mejorar la probabilidad de supervivencia."
+        # Mensaje neutro según el impacto
+        if impact > 0:
+            mensaje = f"Revisar '{feature}', podría estar contribuyendo positivamente a la supervivencia."
+        else:
+            mensaje = f"Revisar '{feature}', podría estar afectando negativamente la supervivencia."
 
-        elif feature in booleanas:
-            if value == 1:
-                mensaje = f"Mantener '{feature}' activo" + (", ayuda a la supervivencia." if impact > 0 else ", podría afectar negativamente.")
-            else:
-                mensaje = f"Activar '{feature}' puede mejorar la probabilidad de supervivencia." if impact > 0 else f"Está bien que '{feature}' esté inactivo."
-
-        else:  # categóricas
-            mensaje = f"Revisar '{feature}' según categoría, su impacto es {round(impact, 4)}."
-
-        # Impacto relativo en porcentaje
+        # Impacto relativo en %
         impacto_pct = 100 * abs(impact) / total_shap_abs
 
         recomendaciones.append({
@@ -123,4 +114,17 @@ def generar_recomendacion(X: pd.DataFrame, idx: int = 0, probabilidad: float = N
             "recomendacion": mensaje
         })
 
-    return recomendaciones
+    # === Contexto general ===
+    contexto = ""
+    if probabilidad is not None:
+        if probabilidad < 0.4:
+            contexto = f"La probabilidad estimada de supervivencia es baja ({round(probabilidad*100,2)}%)."
+        elif probabilidad < 0.7:
+            contexto = f"La probabilidad estimada de supervivencia es moderada ({round(probabilidad*100,2)}%)."
+        else:
+            contexto = f"La probabilidad estimada de supervivencia es alta ({round(probabilidad*100,2)}%)."
+
+    return {
+        "contexto": contexto,
+        "recomendaciones": recomendaciones
+    }
