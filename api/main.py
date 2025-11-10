@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from .db import SessionLocal
 from .models import User
+from .models import Predictions
 from .auth import verify_password, get_password_hash, create_access_token
 import pandas as pd
 import os
@@ -192,6 +193,37 @@ async def update_user(
         "email": user.email,
         "message": "Usuario actualizado correctamente"
     }
+
+#Prediccion relacionada al usuario
+@app.post("/predict_save")
+async def predict_save(data: InputData, user_id: int, db: AsyncSession = Depends(get_db)):
+
+    df = pd.DataFrame([data.dict()])
+
+    pred = model.predict(df)
+    prediction_value = int(pred[0])
+
+    new_prediction = Predictions(
+        user_id=user_id,
+        **data.dict(),
+        prediction_result= prediction_value,
+    )
+
+    db.add(new_prediction)
+    await db.commit()
+    await db.refresh(new_prediction)
+
+    return { "message": "Predicción guardada correctamente"}
+
+@app.get("/predictions/{user_id}")
+async def get_predictions(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Predictions).where(Predictions.user_id == user_id))
+
+    if not result:
+        return {"message": "No hay predicciones registradas para este usuario"}
+    
+    return result.scalars().all()
+
 
 # 👇 Agregar al final del archivo
 from .db import engine, Base
