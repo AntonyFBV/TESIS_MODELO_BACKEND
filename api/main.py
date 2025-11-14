@@ -228,10 +228,17 @@ async def get_predictions(user_id: int, db: AsyncSession = Depends(get_db)):
 # 👇 Agregar al final del archivo
 from .db import engine, Base
 import asyncio
+from sqlalchemy import text
 
 @app.on_event("startup")
 async def startup_event():
     async with engine.begin() as conn:
+        print("🔄 Configurando search_path en la base de datos...")
+
+        # ⭐ ESTA ES LA LÍNEA QUE TE FALTABA ⭐
+        await conn.execute(text("SET search_path TO public"))
+
         print("🔄 Verificando tablas en la base de datos...")
         await conn.run_sync(Base.metadata.create_all)
-    print("✅ Tablas listas en la base de datos")
+
+    print("✅ Base de datos lista")
