@@ -24,7 +24,8 @@ async def get_db():
         yield session
 
 # Habilitar CORS
-origins = ["http://localhost:4200"]
+# origins = ["http://localhost:4200"]
+origins = ["https://mypredictia.netlify.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
