@@ -9,7 +9,7 @@ import json
 
 # === 1️⃣ Configuración Groq API ===
 # ⚠️ CAMBIA ESTO POR TU API KEY DE GROQ
-GROQ_API_KEY = "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"  # 👈 Pega tu key aquí
+GROQ_API_KEY = "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"  # 👈 Pega tu key aquí
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # === 2️⃣ Cargar el modelo una sola vez ===
