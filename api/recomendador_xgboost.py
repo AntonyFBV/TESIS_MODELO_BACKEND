@@ -7,7 +7,7 @@ import os
 import requests
 import json
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
