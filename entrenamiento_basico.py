@@ -15,26 +15,26 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 # === 1. Cargar datos desde PostgreSQL ===
 print("🔄 Cargando datos desde PostgreSQL...")
-engine = create_engine("postgresql+psycopg2://postgres:Fabio123@localhost:5432/modelo_empresas")
+engine = create_engine("postgresql+psycopg2://postgres:kurtyvania@localhost:5432/modelo_empresas")
 df = pd.read_sql("SELECT * FROM public.empresa_datos", engine)
 
 print(f"✅ Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
 
 # --- Nuevo bloque: revisar la columna objetivo ---
-print("🔍 Conteo original de 'sobrevive_2años':")
-print(df['sobrevive_2años'].value_counts())
+print("🔍 Conteo original de 'survive_2_years':")
+print(df['survive_2_years'].value_counts())
 
 # Convertir a 0/1 si no lo está
-df['sobrevive_2años'] = df['sobrevive_2años'].replace({True: 1, False: 0, 'true': 1, 'false': 0})
+df['survive_2_years'] = df['survive_2_years'].replace({True: 1, False: 0, 'true': 1, 'false': 0})
 
 print("\n🔢 Después de convertir a 0/1:")
-print(df['sobrevive_2años'].value_counts())
+print(df['survive_2_years'].value_counts())
 # --- fin del bloque ---
 
 
 # === 2. Definir variables ===
-X = df.drop('sobrevive_2años', axis=1)
-y = df['sobrevive_2años']
+X = df.drop('survive_2_years', axis=1)
+y = df['survive_2_years']
 
 # === 3. Dividir dataset ===
 X_train, X_temp, y_train, y_temp = train_test_split(

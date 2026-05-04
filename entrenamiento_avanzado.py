@@ -25,13 +25,13 @@ random.seed(SEED)
 
 # === Cargar data ===
 print("Loading data from PostgreSQL...")
-engine = create_engine("postgresql+psycopg2://postgres:Fabio123@localhost:5432/modelo_empresas")
+engine = create_engine("postgresql+psycopg2://postgres:kurtyvania@localhost:5432/modelo_empresas")
 df = pd.read_sql("SELECT * FROM public.empresa_datos", engine)
 print(f"Dataset shape: {df.shape}")
 
 # === Variables ===
-X = df.drop('sobrevive_2años', axis=1)
-y = df['sobrevive_2años']
+X = df.drop('survive_2_years', axis=1)
+y = df['survive_2_years']
 
 # === Division de data ===
 X_train, X_temp, y_train, y_temp = train_test_split(
