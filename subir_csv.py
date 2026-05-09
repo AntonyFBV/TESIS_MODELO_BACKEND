@@ -4,16 +4,18 @@ from sqlalchemy.types import Boolean, Integer, Float, String
 
 # Configura tus credenciales de PostgreSQL
 usuario = "postgres"
-contrasena = "kurtyvania"
+contrasena = "Fabio123"
 host = "localhost"
 puerto = "5432"
 basedatos = "modelo_empresas"
 
 # Crear conexión al motor de PostgreSQL
-engine = create_engine(f"postgresql+psycopg2://{usuario}:{contrasena}@{host}:{puerto}/{basedatos}")
+# engine = create_engine(f"postgresql+psycopg2://{usuario}:{contrasena}@{host}:{puerto}/{basedatos}")
+
+
 
 # Leer tu CSV limpio
-df = pd.read_csv("dataset.csv", sep=',')
+df = pd.read_csv("dataset.csv", sep=';')
 
 # Reemplaza NaN por None (PostgreSQL no acepta NaN)
 df = df.where(pd.notnull(df), None)

@@ -21,7 +21,7 @@ random.seed(41)
 
 # === 1️⃣ Cargar datos ===
 print("🔄 Cargando datos desde PostgreSQL...")
-engine = create_engine("postgresql+psycopg2://postgres:kurtyvania@localhost:5432/modelo_empresas")
+engine = create_engine("postgresql+psycopg2://postgres:Fabio123@localhost:5432/modelo_empresas")
 df = pd.read_sql("SELECT * FROM public.empresa_datos", engine)
 print(f"Dimensiones del dataset: {df.shape}")
 
@@ -48,11 +48,12 @@ print(f"✅ Clases balanceadas en entrenamiento: {X_train_bal.shape[0]} muestras
 
 # === 5️⃣ Definir modelo con los mejores hiperparámetros ===
 best_params = {
-    'n_estimators': 203,
-    'learning_rate': 0.2963,
-    'max_depth': 8,
+    'n_estimators': 71,
+    'learning_rate': 0.269,
+    'max_depth': 9,
+    'subsample': 0.8,
+    'colsample_bytree': 0.8,
     'random_state': 42,
-    'use_label_encoder': False,
     'eval_metric': 'logloss'
 }
 

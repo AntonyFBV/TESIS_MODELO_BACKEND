@@ -15,7 +15,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 # === 1. Cargar datos desde PostgreSQL ===
 print("🔄 Cargando datos desde PostgreSQL...")
-engine = create_engine("postgresql+psycopg2://postgres:kurtyvania@localhost:5432/modelo_empresas")
+engine = create_engine("postgresql+psycopg2://postgres:Fabio123@localhost:5432/modelo_empresas")
 df = pd.read_sql("SELECT * FROM public.empresa_datos", engine)
 
 print(f"✅ Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")

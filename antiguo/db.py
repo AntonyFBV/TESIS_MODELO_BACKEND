@@ -2,9 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import ssl
 
-#DATABASE_URL = "postgresql+asyncpg://postgres:Fabio123@localhost:5432/modelo_empresas"
+DATABASE_URL = "postgresql+asyncpg://postgres:Fabio123@localhost:5432/modelo_empresas"
 
-DATABASE_URL = "postgresql+asyncpg://neondb_owner:npg_m0CpE2SabQoi@ep-delicate-darkness-a8xf4x2f-pooler.eastus2.azure.neon.tech/neondb"
+#DATABASE_URL = "postgresql+asyncpg://neondb_owner:npg_m0CpE2SabQoi@ep-delicate-darkness-a8xf4x2f-pooler.eastus2.azure.neon.tech/neondb"
 
 # Configurar SSL para Neon
 ssl_context = ssl.create_default_context()

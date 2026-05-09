@@ -25,7 +25,7 @@ random.seed(SEED)
 
 # === Cargar data ===
 print("Loading data from PostgreSQL...")
-engine = create_engine("postgresql+psycopg2://postgres:kurtyvania@localhost:5432/modelo_empresas")
+engine = create_engine("postgresql+psycopg2://postgres:Fabio123@localhost:5432/modelo_empresas")
 df = pd.read_sql("SELECT * FROM public.empresa_datos", engine)
 print(f"Dataset shape: {df.shape}")
 
