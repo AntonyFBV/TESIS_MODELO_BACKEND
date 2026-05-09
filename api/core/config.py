@@ -11,7 +11,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://neondb_owner
 # ─── CORS ──────────────────────────────────────────────────────────────────────
 ALLOWED_ORIGINS = ["https://mypredictia.netlify.app"]
 
-# ─── MODELO ────────────────────────────────────────────────────────────────────
+# ─── MODELO wa ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "model", "xgboost_model_final.json")
 
