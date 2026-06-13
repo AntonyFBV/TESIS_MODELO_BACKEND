@@ -6,7 +6,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # ─── BASE DE DATOS ─────────────────────────────────────────────────────────────
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://neondb_owner:npg_m0CpE2SabQoi@ep-delicate-darkness-a8xf4x2f-pooler.eastus2.azure.neon.tech/neondb")
+# DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://neondb_owner:npg_m0CpE2SabQoi@ep-delicate-darkness-a8xf4x2f-pooler.eastus2.azure.neon.tech/neondb")
 
 # ─── CORS ──────────────────────────────────────────────────────────────────────
 ALLOWED_ORIGINS = ["https://mypredictia.netlify.app"]
