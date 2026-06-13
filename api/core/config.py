@@ -10,6 +10,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+asyncpg://neondb_owner
 
 # ─── CORS ──────────────────────────────────────────────────────────────────────
 ALLOWED_ORIGINS = ["https://mypredictia.netlify.app"]
+#ALLOWED_ORIGINS = ["http://localhost:4200"]
 
 # ─── MODELO wa ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

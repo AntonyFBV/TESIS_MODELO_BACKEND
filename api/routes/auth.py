@@ -61,28 +61,63 @@ async def update_user(
 ):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
+
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+    # Verificar contraseña actual para cualquier modificación
+    if (
+        data.username != user.username
+        or data.email != user.email
+        or data.password
+    ):
+        if not data.current_password:
+            raise HTTPException(
+                status_code=400,
+                detail="Debe ingresar su contraseña actual"
+            )
+
+        if not verify_password(
+            data.current_password,
+            user.hashed_password
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="La contraseña actual es incorrecta"
+            )
+
     if data.email and data.email != user.email:
-        check = await db.execute(select(User).where(User.email == data.email))
+        check = await db.execute(
+            select(User).where(User.email == data.email)
+        )
         if check.scalars().first():
-            raise HTTPException(status_code=400, detail="El correo ya está registrado")
+            raise HTTPException(
+                status_code=400,
+                detail="El correo ya está registrado"
+            )
 
     if data.username and data.username != user.username:
-        check = await db.execute(select(User).where(User.username == data.username))
+        check = await db.execute(
+            select(User).where(User.username == data.username)
+        )
         if check.scalars().first():
-            raise HTTPException(status_code=400, detail="El nombre de usuario ya está en uso")
+            raise HTTPException(
+                status_code=400,
+                detail="El nombre de usuario ya está en uso"
+            )
 
     if data.username:
         user.username = data.username
+
     if data.email:
         user.email = data.email
+
     if data.password:
         user.hashed_password = get_password_hash(data.password[:72])
 
     await db.commit()
     await db.refresh(user)
+
     return {
         "id": user.id,
         "username": user.username,

@@ -11,14 +11,14 @@ ssl_context.verify_mode = ssl.CERT_NONE
 # ─── ENGINE ────────────────────────────────────────────────────────────────────
 engine = create_async_engine(
     DATABASE_URL,
-    echo=False,
-    connect_args={"ssl": ssl_context},
+   echo=False,
+   connect_args={"ssl": ssl_context},
 )
 
-#engine = create_async_engine(
-#    DATABASE_URL,
-#    echo=False,
-#)
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+)
 
 SessionLocal = sessionmaker(
     bind=engine,

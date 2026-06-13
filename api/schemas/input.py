@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 # ─── INPUT DEL MODELO ──────────────────────────────────────────────────────────
 class InputData(BaseModel):
@@ -37,6 +37,7 @@ class RegisterRequest(BaseModel):
 
 
 class UserUpdateRequest(BaseModel):
-    username: str | None = None
-    email: str | None = None
-    password: str | None = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    current_password: Optional[str] = None
